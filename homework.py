@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -9,15 +9,17 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
+    MSG_1 = (
+        'Тип тренировки: {training_type}; '
+        'Длительность: {duration:.3f} ч.; '
+        'Дистанция: {distance:.3f} км; '
+        'Ср. скорость: {speed:.3f} км/ч; '
+        'Потрачено ккал: {calories:.3f}.'
+    )
 
     def get_message(self) -> None:
         """Метод отвечает за вывод сообщения. """
-        MSG_1 = (f'Тип тренировки: {self.training_type};'
-                 f' Длительность: {self.duration:.3f} ч.;'
-                 f' Дистанция: {self.distance:.3f} км;'
-                 f' Ср. скорость: {self.speed:.3f} км/ч;'
-                 f' Потрачено ккал: {self.calories:.3f}.')
-        return MSG_1
+        return self.MSG_1.format(**asdict(self))
 
 
 class Training():
@@ -47,11 +49,8 @@ class Training():
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        try:
-            self.get_spent_calories(self)
-        finally:
-            print(f'Метод get_spent_calories не переопределен'
-                  f' в классе {self.__class__.__name__}')
+        raise NotImplementedError(f'Метод get_spent_calories не переопределен'
+                                  f' в классе {self.__class__.__name__}')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -137,8 +136,7 @@ def read_package(workout_type: str, data: list) -> Training:
     if workout_type in trainings:
         result = trainings[workout_type](*data)
         return result
-    else:
-        return print('Данный вид тренировки не найден.')
+    raise NotImplementedError(f'Вид тренировки {workout_type} не найден.')
 
 
 def main(training: Training) -> None:
